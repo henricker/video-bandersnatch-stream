@@ -1,20 +1,20 @@
 ASSETSFOLDER=assets/timeline
-
-for media in `ls $ASSETSFOLDER | grep .mp4`; do
-    # Cut extensions and video resolution
-    FILENAME=$(echo $media | sed -n 's/.mp4//p' | sed -n 's/-1920x1080//p')
-    INPUT=$ASSETSFOLDER/$media
+for mediaFile in `ls $ASSETSFOLDER | grep .mp4`; do
+    # cortar a extensao e a resolucao do arquivo
+    FILENAME=$(echo $mediaFile | sed -n 's/.mp4//p' | sed -n 's/-1920x1080//p')
+    INPUT=$ASSETSFOLDER/$mediaFile
     FOLDER_TARGET=$ASSETSFOLDER/$FILENAME
     mkdir -p $FOLDER_TARGET
 
-    # create 3 files to each file with different resolution
+    # criar arquivos de resolucoes diferentes na pasta
     OUTPUT=$ASSETSFOLDER/$FILENAME/$FILENAME
+    DURATION=$(ffprobe -i $INPUT -show_format -v quiet | sed -n 's/duration=//p')
 
-    OUTPUT_144=$OUTPUT-144
-    OUTPUT_360=$OUTPUT-360
-    OUTPUT_720=$OUTPUT-720
+    OUTPUT144=$OUTPUT-$DURATION-144
+    OUTPUT360=$OUTPUT-$DURATION-360
+    OUTPUT720=$OUTPUT-$DURATION-720
 
-    echo 'Rendering in 720p'
+    echo 'rendering in 720p'
     ffmpeg -y -i $INPUT \
         -c:a aac -ac 2 \
         -vcodec h264 -acodec aac \
@@ -25,9 +25,9 @@ for media in `ls $ASSETSFOLDER | grep .mp4`; do
         -bufsize 1000k \
         -vf "scale=-1:720" \
         -v quiet \
-        $OUTPUT_720.mp4
-
-    echo 'Rendering in 360p'
+        $OUTPUT720.mp4
+    
+    echo 'rendering in 360p'
     ffmpeg -y -i $INPUT \
         -c:a aac -ac 2 \
         -vcodec h264 -acodec aac \
@@ -38,9 +38,9 @@ for media in `ls $ASSETSFOLDER | grep .mp4`; do
         -bufsize 400k \
         -vf "scale=-1:360" \
         -v quiet \
-        $OUTPUT_360.mp4
-
-    echo 'Rendering in 144p'
+        $OUTPUT360.mp4
+    
+    echo 'rendering in 144p'
     ffmpeg -y -i $INPUT \
         -c:a aac -ac 2 \
         -vcodec h264 -acodec aac \
@@ -51,5 +51,9 @@ for media in `ls $ASSETSFOLDER | grep .mp4`; do
         -bufsize 300k \
         -vf "scale=256:144" \
         -v quiet \
-        $OUTPUT_144.mp4
+        $OUTPUT144.mp4
+
+    echo $OUTPUT144.mp4
+    echo $OUTPUT360.mp4
+    echo $OUTPUT720.mp4
 done
