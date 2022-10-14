@@ -19,6 +19,7 @@
   "rules": {
     "camelcase": "off",
     "prettier/prettier": "error",
-    "no-undef": "off"
+    "no-undef": "off",
+    "no-unused-vars": "off"
   }
 }
