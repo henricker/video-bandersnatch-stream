@@ -1,5 +1,5 @@
 FROM node:alpine
-USER root
+# USER node
 WORKDIR /home/app
 RUN apk add --no-cache ffmpeg
 RUN npm config set cache /tmp --global
@@ -10,7 +10,5 @@ RUN npm install
 
 COPY . .
 
-RUN chmod 777 /home/app
-RUN chown -R root:root /home/app
-
-RUN ./script.sh
+# RUN chmod 777 /home/app
+# RUN chown -R node:node /home/app
